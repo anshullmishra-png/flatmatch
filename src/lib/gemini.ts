@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { ParticipantBreakdown } from '@/types';
+// (redeploy nudge to pick up DEBUG_GEMINI env var)
 
 // Claude/Gemini's ONLY job here is to turn already-decided facts into plain
 // sentences. It never judges, scores, ranks, or picks a winner — that's all
