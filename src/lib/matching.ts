@@ -44,6 +44,13 @@ function hardFailuresFor(listing: Listing, profile: Profile, participantName: st
     failures.push({ ...base, reason: `no parking, but ${participantName} needs it` });
   }
 
+  if (listing.bedrooms < profile.min_bedrooms) {
+    failures.push({
+      ...base,
+      reason: `only ${listing.bedrooms} bedroom(s), below ${participantName}'s minimum of ${profile.min_bedrooms}`,
+    });
+  }
+
   if (listing.bathrooms < profile.min_bathrooms) {
     failures.push({
       ...base,

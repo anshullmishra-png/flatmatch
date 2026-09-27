@@ -9,6 +9,7 @@ export interface ProfileFormData {
   excludedAreas: string[];
   needsLift: boolean;
   needsParking: boolean;
+  minBedrooms: string | number;
   minBathrooms: string | number;
   petFriendlyRequired: boolean;
   maxCommuteMinutes: string | number;
@@ -31,6 +32,10 @@ export function validateProfile(data: ProfileFormData): FieldErrors {
 
   if (!isPositiveNumber(data.maxRent)) {
     errors.maxRent = 'Enter a rent budget greater than 0.';
+  }
+
+  if (data.minBedrooms !== '' && !isNonNegativeInt(data.minBedrooms)) {
+    errors.minBedrooms = 'Minimum bedrooms must be 0 or a positive whole number.';
   }
 
   if (data.minBathrooms !== '' && !isNonNegativeInt(data.minBathrooms)) {
@@ -95,6 +100,7 @@ export interface ListingFormData {
   area: string;
   rent: string | number;
   floor: string | number;
+  bedrooms: string | number;
   bathrooms: string | number;
 }
 
@@ -112,6 +118,9 @@ export function validateListing(data: ListingFormData): FieldErrors {
   }
   if (!isNonNegativeInt(data.floor)) {
     errors.floor = 'Floor must be 0 or a positive whole number.';
+  }
+  if (!isNonNegativeInt(data.bedrooms)) {
+    errors.bedrooms = 'Bedrooms must be 0 or a positive whole number.';
   }
   if (!isNonNegativeInt(data.bathrooms)) {
     errors.bathrooms = 'Bathrooms must be 0 or a positive whole number.';

@@ -40,7 +40,7 @@ export default function ShortlistCard({ index, entry }: ShortlistCardProps) {
                 ₹{listing.rent}/mo
               </span>
               <span className="rounded-full border border-paper/30 px-3 py-1 font-mono text-[11px] uppercase text-paper/80">
-                Floor {listing.floor} · {listing.bathrooms} bath
+                Floor {listing.floor} · {listing.bedrooms} bed · {listing.bathrooms} bath
               </span>
               <span className="rounded-full border border-orange px-3 py-1 font-mono text-[11px] uppercase text-orange">
                 {Math.round(score * 100)}% match

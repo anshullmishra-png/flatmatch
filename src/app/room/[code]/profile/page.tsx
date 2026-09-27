@@ -4,9 +4,19 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Nav from '@/components/Nav';
 import TagInput from '@/components/TagInput';
+import ToggleChip from '@/components/ToggleChip';
+import RentSlider from '@/components/RentSlider';
 import { getRoomByCode, getProfile, submitProfile } from '@/lib/actions';
 import { getStoredParticipantId } from '@/lib/participant-storage';
 import { checkAreaConflict, checkDuplicateTag } from '@/lib/validation';
+import {
+  AREA_PRESETS,
+  SOFT_PREFERENCE_PRESETS,
+  COMMUTE_PRESETS,
+  RENT_SLIDER_MIN,
+  RENT_SLIDER_MAX,
+  RENT_SLIDER_STEP,
+} from '@/lib/presets';
 import type { Participant } from '@/types';
 
 export default function ConstraintsFormPage() {
@@ -19,6 +29,7 @@ export default function ConstraintsFormPage() {
   const [excludedAreas, setExcludedAreas] = useState<string[]>([]);
   const [needsLift, setNeedsLift] = useState(false);
   const [needsParking, setNeedsParking] = useState(false);
+  const [minBedrooms, setMinBedrooms] = useState('');
   const [minBathrooms, setMinBathrooms] = useState('');
   const [petFriendlyRequired, setPetFriendlyRequired] = useState(false);
   const [maxCommuteMinutes, setMaxCommuteMinutes] = useState('');
@@ -45,6 +56,7 @@ export default function ConstraintsFormPage() {
         setExcludedAreas(profile.excluded_areas);
         setNeedsLift(profile.needs_lift);
         setNeedsParking(profile.needs_parking);
+        setMinBedrooms(String(profile.min_bedrooms));
         setMinBathrooms(String(profile.min_bathrooms));
         setPetFriendlyRequired(profile.pet_friendly_required);
         setMaxCommuteMinutes(profile.max_commute_minutes != null ? String(profile.max_commute_minutes) : '');
@@ -63,6 +75,7 @@ export default function ConstraintsFormPage() {
       excludedAreas,
       needsLift,
       needsParking,
+      minBedrooms,
       minBathrooms,
       petFriendlyRequired,
       maxCommuteMinutes,
@@ -114,73 +127,92 @@ export default function ConstraintsFormPage() {
           <section className="border-2 border-ink p-5">
             <h2 className="font-display uppercase text-xl">Must-haves (non-negotiable)</h2>
             <div className="mt-5 flex flex-col gap-5">
-              <label className="flex flex-col gap-2">
-                <span className="font-mono uppercase text-xs">Max rent (₹/month)</span>
-                <input
-                  type="number"
-                  value={maxRent}
-                  onChange={(e) => setMaxRent(e.target.value)}
-                  className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
-                />
-                {errors.maxRent && <p className="font-mono text-xs text-orange">{errors.maxRent}</p>}
-              </label>
+              <RentSlider
+                label="Max rent (₹/month)"
+                value={maxRent}
+                onChange={setMaxRent}
+                min={RENT_SLIDER_MIN}
+                max={RENT_SLIDER_MAX}
+                step={RENT_SLIDER_STEP}
+              />
+              {errors.maxRent && <p className="font-mono text-xs text-orange">{errors.maxRent}</p>}
 
               <TagInput
                 label="Excluded areas"
-                placeholder="e.g. Kharadi"
+                placeholder="or type a custom area"
                 tags={excludedAreas}
                 onChange={setExcludedAreas}
                 validate={(c) => checkAreaConflict(c, excludedAreas, softPreferences, 'excluded')}
+                presets={AREA_PRESETS}
               />
 
-              <div className="flex flex-wrap gap-6">
-                <label className="flex items-center gap-2 font-body">
-                  <input type="checkbox" checked={needsLift} onChange={(e) => setNeedsLift(e.target.checked)} />
-                  Needs a lift
-                </label>
-                <label className="flex items-center gap-2 font-body">
-                  <input
-                    type="checkbox"
-                    checked={needsParking}
-                    onChange={(e) => setNeedsParking(e.target.checked)}
-                  />
-                  Needs parking
-                </label>
-                <label className="flex items-center gap-2 font-body">
-                  <input
-                    type="checkbox"
+              <div className="flex flex-col gap-2">
+                <span className="font-mono uppercase text-xs">Amenities required</span>
+                <div className="flex flex-wrap gap-3">
+                  <ToggleChip label="Needs a lift" checked={needsLift} onChange={setNeedsLift} />
+                  <ToggleChip label="Needs parking" checked={needsParking} onChange={setNeedsParking} />
+                  <ToggleChip
+                    label="Must be pet-friendly"
                     checked={petFriendlyRequired}
-                    onChange={(e) => setPetFriendlyRequired(e.target.checked)}
+                    onChange={setPetFriendlyRequired}
                   />
-                  Must be pet-friendly
-                </label>
+                </div>
               </div>
-
-              <label className="flex flex-col gap-2">
-                <span className="font-mono uppercase text-xs">Min bathrooms</span>
-                <input
-                  type="number"
-                  value={minBathrooms}
-                  onChange={(e) => setMinBathrooms(e.target.value)}
-                  className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
-                />
-                {errors.minBathrooms && <p className="font-mono text-xs text-orange">{errors.minBathrooms}</p>}
-              </label>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="flex flex-col gap-2">
+                  <span className="font-mono uppercase text-xs">Min bedrooms</span>
+                  <input
+                    type="number"
+                    value={minBedrooms}
+                    onChange={(e) => setMinBedrooms(e.target.value)}
+                    className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
+                  />
+                  {errors.minBedrooms && <p className="font-mono text-xs text-orange">{errors.minBedrooms}</p>}
+                </label>
+                <label className="flex flex-col gap-2">
+                  <span className="font-mono uppercase text-xs">Min bathrooms</span>
+                  <input
+                    type="number"
+                    value={minBathrooms}
+                    onChange={(e) => setMinBathrooms(e.target.value)}
+                    className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
+                  />
+                  {errors.minBathrooms && <p className="font-mono text-xs text-orange">{errors.minBathrooms}</p>}
+                </label>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="flex flex-col gap-2">
                   <span className="font-mono uppercase text-xs">Max commute (minutes)</span>
+                  <div className="flex flex-wrap gap-2">
+                    {COMMUTE_PRESETS.map((mins) => (
+                      <button
+                        key={mins}
+                        type="button"
+                        onClick={() => setMaxCommuteMinutes(String(mins))}
+                        aria-pressed={maxCommuteMinutes === String(mins)}
+                        className={`rounded-full border-2 border-ink px-3 py-1.5 font-mono text-xs uppercase transition-colors ${
+                          maxCommuteMinutes === String(mins)
+                            ? 'bg-ink text-paper'
+                            : 'bg-transparent text-ink hover:bg-ink/10'
+                        }`}
+                      >
+                        {mins} min
+                      </button>
+                    ))}
+                  </div>
                   <input
                     type="number"
                     value={maxCommuteMinutes}
                     onChange={(e) => setMaxCommuteMinutes(e.target.value)}
-                    placeholder="optional"
+                    placeholder="or type an exact number, optional"
                     className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
                   />
                   {errors.maxCommuteMinutes && (
                     <p className="font-mono text-xs text-orange">{errors.maxCommuteMinutes}</p>
                   )}
-                </label>
+                </div>
                 <label className="flex flex-col gap-2">
                   <span className="font-mono uppercase text-xs">Commute reference</span>
                   <input
@@ -202,13 +234,14 @@ export default function ConstraintsFormPage() {
             <div className="mt-5">
               <TagInput
                 label="Soft preferences"
-                placeholder="e.g. balcony, furnished, near metro"
+                placeholder="or type a custom preference"
                 tags={softPreferences}
                 onChange={setSoftPreferences}
                 validate={(c) =>
                   checkDuplicateTag(c, softPreferences) ??
                   checkAreaConflict(c, excludedAreas, softPreferences, 'preference')
                 }
+                presets={SOFT_PREFERENCE_PRESETS}
               />
               {errors.softPreferences && (
                 <p className="font-mono text-xs text-orange">{errors.softPreferences}</p>

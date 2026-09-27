@@ -20,6 +20,7 @@ export interface Profile {
   excluded_areas: string[];
   needs_lift: boolean;
   needs_parking: boolean;
+  min_bedrooms: number;
   min_bathrooms: number;
   pet_friendly_required: boolean;
   max_commute_minutes: number | null;
@@ -38,6 +39,7 @@ export interface Listing {
   floor: number;
   has_lift: boolean;
   has_parking: boolean;
+  bedrooms: number;
   bathrooms: number;
   pet_friendly: boolean;
   link: string | null;

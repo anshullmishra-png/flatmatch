@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Nav from '@/components/Nav';
+import ToggleChip from '@/components/ToggleChip';
 import { getRoomByCode, getProfile, addListing } from '@/lib/actions';
 import { getStoredParticipantId } from '@/lib/participant-storage';
 import type { Participant, Profile } from '@/types';
@@ -21,6 +22,7 @@ export default function AddListingPage() {
   const [area, setArea] = useState('');
   const [rent, setRent] = useState('');
   const [floor, setFloor] = useState('0');
+  const [bedrooms, setBedrooms] = useState('1');
   const [bathrooms, setBathrooms] = useState('1');
   const [hasLift, setHasLift] = useState(false);
   const [hasParking, setHasParking] = useState(false);
@@ -67,6 +69,7 @@ export default function AddListingPage() {
       area,
       rent,
       floor,
+      bedrooms,
       bathrooms,
       hasLift,
       hasParking,
@@ -135,7 +138,7 @@ export default function AddListingPage() {
             {errors.area && <p className="font-mono text-xs text-orange">{errors.area}</p>}
           </label>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <label className="flex flex-col gap-2">
               <span className="font-mono uppercase text-xs">Rent (₹/month)</span>
               <input
@@ -157,6 +160,16 @@ export default function AddListingPage() {
               {errors.floor && <p className="font-mono text-xs text-orange">{errors.floor}</p>}
             </label>
             <label className="flex flex-col gap-2">
+              <span className="font-mono uppercase text-xs">Bedrooms</span>
+              <input
+                type="number"
+                value={bedrooms}
+                onChange={(e) => setBedrooms(e.target.value)}
+                className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
+              />
+              {errors.bedrooms && <p className="font-mono text-xs text-orange">{errors.bedrooms}</p>}
+            </label>
+            <label className="flex flex-col gap-2">
               <span className="font-mono uppercase text-xs">Bathrooms</span>
               <input
                 type="number"
@@ -168,19 +181,10 @@ export default function AddListingPage() {
             </label>
           </div>
 
-          <div className="flex flex-wrap gap-6">
-            <label className="flex items-center gap-2 font-body">
-              <input type="checkbox" checked={hasLift} onChange={(e) => setHasLift(e.target.checked)} />
-              Has a lift
-            </label>
-            <label className="flex items-center gap-2 font-body">
-              <input type="checkbox" checked={hasParking} onChange={(e) => setHasParking(e.target.checked)} />
-              Has parking
-            </label>
-            <label className="flex items-center gap-2 font-body">
-              <input type="checkbox" checked={petFriendly} onChange={(e) => setPetFriendly(e.target.checked)} />
-              Pet-friendly
-            </label>
+          <div className="flex flex-wrap gap-3">
+            <ToggleChip label="Has a lift" checked={hasLift} onChange={setHasLift} />
+            <ToggleChip label="Has parking" checked={hasParking} onChange={setHasParking} />
+            <ToggleChip label="Pet-friendly" checked={petFriendly} onChange={setPetFriendly} />
           </div>
 
           <label className="flex flex-col gap-2">
