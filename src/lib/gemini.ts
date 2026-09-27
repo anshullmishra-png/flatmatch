@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { ParticipantBreakdown } from '@/types';
-// (redeploy nudge to pick up DEBUG_GEMINI env var)
 
 // Claude/Gemini's ONLY job here is to turn already-decided facts into plain
 // sentences. It never judges, scores, ranks, or picks a winner — that's all
@@ -40,10 +39,6 @@ ${JSON.stringify(payload, null, 2)}`;
     });
   } catch (err) {
     console.error('Gemini breakdown phrasing failed, falling back to raw facts:', err);
-    if (process.env.DEBUG_GEMINI === '1') {
-      const message = err instanceof Error ? err.message : String(err);
-      return breakdown.map((b) => ({ ...b, summary: `[DEBUG] ${message}` }));
-    }
     return breakdown; // AI phrasing is a nice-to-have; never block the shortlist on it
   }
 }
