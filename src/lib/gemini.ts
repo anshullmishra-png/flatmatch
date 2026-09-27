@@ -39,6 +39,10 @@ ${JSON.stringify(payload, null, 2)}`;
     });
   } catch (err) {
     console.error('Gemini breakdown phrasing failed, falling back to raw facts:', err);
+    if (process.env.DEBUG_GEMINI === '1') {
+      const message = err instanceof Error ? err.message : String(err);
+      return breakdown.map((b) => ({ ...b, summary: `[DEBUG] ${message}` }));
+    }
     return breakdown; // AI phrasing is a nice-to-have; never block the shortlist on it
   }
 }
