@@ -10,11 +10,23 @@ interface TagInputProps {
   onChange: (tags: string[]) => void;
   validate?: (candidate: string) => string | null;
   presets?: string[];
+  accent?: 'coral' | 'teal';
 }
 
-export default function TagInput({ label, placeholder, tags, onChange, validate, presets }: TagInputProps) {
+export default function TagInput({
+  label,
+  placeholder,
+  tags,
+  onChange,
+  validate,
+  presets,
+  accent = 'coral',
+}: TagInputProps) {
   const [draft, setDraft] = useState('');
   const [liveError, setLiveError] = useState<string | null>(null);
+
+  const accentBg = accent === 'teal' ? 'bg-teal' : 'bg-coral';
+  const accentBorder = accent === 'teal' ? 'focus:border-teal' : 'focus:border-coral';
 
   function update(value: string) {
     setDraft(value);
@@ -53,7 +65,7 @@ export default function TagInput({ label, placeholder, tags, onChange, validate,
 
   return (
     <div className="flex flex-col gap-3">
-      <span className="font-mono uppercase text-xs">{label}</span>
+      <span className="text-[13px] font-bold uppercase tracking-wide text-ink/60">{label}</span>
 
       {presets && presets.length > 0 && (
         <div className="flex flex-wrap gap-2">
@@ -65,11 +77,17 @@ export default function TagInput({ label, placeholder, tags, onChange, validate,
                 type="button"
                 onClick={() => togglePreset(preset)}
                 aria-pressed={selected}
-                className={`rounded-full border-2 border-ink px-3 py-1.5 font-mono text-xs uppercase transition-colors ${
-                  selected ? 'bg-ink text-paper' : 'bg-transparent text-ink hover:bg-ink/10'
+                className={`inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-[13px] font-semibold transition-colors ${
+                  selected
+                    ? `border-ink ${accentBg} text-cream`
+                    : 'border-ink/15 bg-cream text-ink/70 hover:border-ink/40'
                 }`}
               >
-                {selected ? '✓ ' : '+ '}
+                {selected ? (
+                  <iconify-icon icon="ph:check-bold" width="13" height="13" />
+                ) : (
+                  <iconify-icon icon="ph:plus-bold" width="13" height="13" />
+                )}
                 {preset}
               </button>
             );
@@ -83,11 +101,11 @@ export default function TagInput({ label, placeholder, tags, onChange, validate,
             presets?.some((p) => normalizeTag(p) === normalizeTag(tag)) ? null : (
               <span
                 key={`${tag}-${i}`}
-                className="flex items-center gap-2 rounded-full border-2 border-ink px-3 py-1 font-mono text-xs"
+                className="flex items-center gap-2 rounded-full border-2 border-ink/15 px-3 py-1.5 text-[13px] font-semibold text-ink"
               >
                 {tag}
                 <button type="button" onClick={() => remove(i)} aria-label={`Remove ${tag}`}>
-                  ×
+                  <iconify-icon icon="ph:x-bold" width="12" height="12" />
                 </button>
               </span>
             )
@@ -106,17 +124,17 @@ export default function TagInput({ label, placeholder, tags, onChange, validate,
             }
           }}
           placeholder={placeholder}
-          className="flex-1 border-2 border-ink px-4 py-2 font-body focus:outline-none focus:bg-orange/10"
+          className={`flex-1 rounded-full border-2 border-ink/15 px-4 py-2.5 text-[15px] focus:outline-none ${accentBorder}`}
         />
         <button
           type="button"
           onClick={commit}
-          className="rounded-full border-2 border-ink px-4 py-2 font-mono text-xs uppercase hover:bg-ink hover:text-paper transition-colors"
+          className="rounded-full border-2 border-ink bg-cream px-4 py-2 text-[13px] font-semibold uppercase transition-colors hover:bg-ink hover:text-cream"
         >
           Add
         </button>
       </div>
-      {liveError && <p className="font-mono text-xs text-orange">{liveError}</p>}
+      {liveError && <p className="text-[13px] font-medium text-coral">{liveError}</p>}
     </div>
   );
 }

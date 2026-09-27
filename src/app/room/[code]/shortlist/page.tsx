@@ -38,18 +38,18 @@ export default function ShortlistPage() {
   if (state.status === 'loading') {
     return (
       <main className="min-h-screen bg-ink px-6 pt-28">
-        <Nav dark />
-        <p className="font-mono text-sm text-paper">Running the match…</p>
+        <Nav />
+        <p className="text-cream/70">Running the match…</p>
       </main>
     );
   }
 
   if (state.status === 'not_found') {
     return (
-      <main className="min-h-screen bg-paper px-6 pt-28 pb-16">
+      <main className="min-h-screen bg-cream px-6 pb-16 pt-28">
         <Nav />
         <div className="mx-auto max-w-md text-center">
-          <h1 className="font-display uppercase text-4xl">Room not found</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight">Room not found</h1>
         </div>
       </main>
     );
@@ -57,17 +57,17 @@ export default function ShortlistPage() {
 
   if (state.status === 'not_enough') {
     return (
-      <main className="min-h-screen bg-paper px-6 pt-28 pb-16">
+      <main className="min-h-screen bg-cream px-6 pb-16 pt-28">
         <Nav />
         <div className="mx-auto max-w-md text-center">
-          <h1 className="font-display uppercase text-3xl">Not enough profiles yet</h1>
-          <p className="mt-4 font-body text-ink/70">
+          <h1 className="text-3xl font-extrabold tracking-tight">Not enough profiles yet</h1>
+          <p className="mt-4 text-ink/65">
             {state.submittedCount}/{state.totalCount} people have submitted their constraints. You need at least 2
             before a shortlist means anything.
           </p>
           <Link
             href={`/room/${code}`}
-            className="mt-8 inline-block rounded-full bg-ink px-8 py-4 font-display uppercase text-paper"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-coral px-8 py-4 font-semibold text-cream shadow-[0_8px_0_0_#23201d] transition-all hover:translate-y-1 hover:shadow-[0_4px_0_0_#23201d]"
           >
             Back to room
           </Link>
@@ -79,35 +79,37 @@ export default function ShortlistPage() {
   const { result } = state;
 
   return (
-    <main className="min-h-screen bg-ink pb-24">
-      <Nav dark />
+    <main className="min-h-screen bg-ink pb-24 text-cream">
+      <Nav />
       <div className="px-6 pt-28">
-        <h1 className="font-display uppercase text-paper text-[12vw] sm:text-7xl tracking-[-0.04em] leading-[0.85]">
-          Shortlist
-        </h1>
+        <span className="inline-flex items-center gap-2 rounded-full bg-cream/10 px-4 py-2 text-[13px] font-semibold text-sunny">
+          <iconify-icon icon="ph:scales-fill" width="16" height="16" />
+          The hard filter always wins
+        </span>
+        <h1 className="mt-4 text-[12vw] font-extrabold leading-[0.85] tracking-tight sm:text-7xl">Shortlist</h1>
       </div>
 
-      <div className="mx-auto max-w-4xl px-6 mt-10">
+      <div className="mx-auto mt-10 max-w-4xl px-6">
         {result.shortlist.length > 0 ? (
           result.shortlist.map((entry, i) => <ShortlistCard key={entry.listing.id} index={i} entry={entry} />)
         ) : (
-          <p className="font-body text-paper/70">
+          <p className="text-cream/70">
             Nothing has cleared every must-have yet. Here&apos;s exactly why each listing didn&apos;t make it:
           </p>
         )}
 
         {result.nearMisses.length > 0 && (
           <div className="mt-12">
-            <h2 className="font-mono uppercase text-xs text-paper/50">
+            <h2 className="text-[13px] font-bold uppercase tracking-wide text-cream/50">
               {result.shortlist.length > 0 ? 'Didn’t make the cut' : 'Why nothing qualified'}
             </h2>
             <div className="mt-4 flex flex-col gap-4">
               {result.nearMisses.map((miss) => (
-                <div key={miss.listing.id} className="border border-paper/20 p-4">
-                  <p className="font-mono uppercase text-sm text-paper">{miss.listing.title}</p>
+                <div key={miss.listing.id} className="rounded-[1.5rem] border border-cream/15 p-4">
+                  <p className="text-sm font-bold uppercase text-cream">{miss.listing.title}</p>
                   <ul className="mt-2 flex flex-col gap-1">
                     {miss.failures.map((f, i) => (
-                      <li key={i} className="font-body text-sm text-paper/70">
+                      <li key={i} className="text-sm text-cream/70">
                         Excluded because {f.reason}.
                       </li>
                     ))}
@@ -121,7 +123,7 @@ export default function ShortlistPage() {
         <div className="mt-14">
           <Link
             href={`/room/${code}`}
-            className="rounded-full bg-paper px-8 py-4 font-display uppercase text-ink text-lg transition-transform hover:scale-105 inline-block"
+            className="inline-flex items-center gap-2 rounded-full bg-cream px-8 py-4 text-lg font-semibold text-ink shadow-[0_8px_0_0_rgba(253,249,243,0.25)] transition-all hover:translate-y-1 hover:shadow-[0_4px_0_0_rgba(253,249,243,0.25)]"
           >
             Back to room
           </Link>

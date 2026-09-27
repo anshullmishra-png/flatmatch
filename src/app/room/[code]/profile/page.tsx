@@ -9,6 +9,7 @@ import RentSlider from '@/components/RentSlider';
 import { getRoomByCode, getProfile, submitProfile } from '@/lib/actions';
 import { getStoredParticipantId } from '@/lib/participant-storage';
 import { checkAreaConflict, checkDuplicateTag } from '@/lib/validation';
+import { stripNegative } from '@/lib/number-input';
 import {
   AREA_PRESETS,
   SOFT_PREFERENCE_PRESETS,
@@ -27,6 +28,7 @@ export default function ConstraintsFormPage() {
   const [me, setMe] = useState<Participant | null | undefined>(undefined);
   const [maxRent, setMaxRent] = useState('');
   const [excludedAreas, setExcludedAreas] = useState<string[]>([]);
+  const [preferredAreas, setPreferredAreas] = useState<string[]>([]);
   const [needsLift, setNeedsLift] = useState(false);
   const [needsParking, setNeedsParking] = useState(false);
   const [minBedrooms, setMinBedrooms] = useState('');
@@ -54,6 +56,7 @@ export default function ConstraintsFormPage() {
       if (profile) {
         setMaxRent(String(profile.max_rent));
         setExcludedAreas(profile.excluded_areas);
+        setPreferredAreas(profile.preferred_areas);
         setNeedsLift(profile.needs_lift);
         setNeedsParking(profile.needs_parking);
         setMinBedrooms(String(profile.min_bedrooms));
@@ -73,6 +76,7 @@ export default function ConstraintsFormPage() {
     const result = await submitProfile(me.id, {
       maxRent,
       excludedAreas,
+      preferredAreas,
       needsLift,
       needsParking,
       minBedrooms,
@@ -92,41 +96,39 @@ export default function ConstraintsFormPage() {
 
   if (me === undefined) {
     return (
-      <main className="min-h-screen bg-paper px-6 pt-28">
+      <main className="min-h-screen bg-cream px-6 pt-28">
         <Nav />
-        <p className="font-mono text-sm">Loading…</p>
+        <p className="text-ink/60">Loading…</p>
       </main>
     );
   }
 
   if (!me) {
     return (
-      <main className="min-h-screen bg-paper px-6 pt-28 pb-16">
+      <main className="min-h-screen bg-cream px-6 pb-16 pt-28">
         <Nav />
         <div className="mx-auto max-w-md">
-          <h1 className="font-display uppercase text-3xl">Join the room first</h1>
-          <p className="mt-3 font-body text-ink/70">
-            You need to enter your name on the room page before filling this in.
-          </p>
+          <h1 className="text-3xl font-extrabold tracking-tight">Join the room first</h1>
+          <p className="mt-3 text-ink/65">You need to enter your name on the room page before filling this in.</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-paper px-6 pt-28 pb-16">
+    <main className="min-h-screen bg-cream px-6 pb-16 pt-28">
       <Nav />
       <div className="mx-auto max-w-xl">
-        <h1 className="font-display uppercase text-3xl tracking-[-0.04em] leading-[0.9]">Your constraints</h1>
-        <p className="mt-2 font-body text-ink/70">
+        <h1 className="text-3xl font-extrabold leading-[0.95] tracking-tight">Your constraints</h1>
+        <p className="mt-2 text-ink/65">
           Filled in privately, before you see any listings. Editing later never deletes listings — the shortlist
           always recomputes live.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-10">
-          <section className="border-2 border-ink p-5">
-            <h2 className="font-display uppercase text-xl">Must-haves (non-negotiable)</h2>
-            <div className="mt-5 flex flex-col gap-5">
+          <section className="rounded-[2rem] border-2 border-ink bg-cream p-6">
+            <h2 className="text-xl font-extrabold">Must-haves (non-negotiable)</h2>
+            <div className="mt-5 flex flex-col gap-6">
               <RentSlider
                 label="Max rent (₹/month)"
                 value={maxRent}
@@ -135,19 +137,22 @@ export default function ConstraintsFormPage() {
                 max={RENT_SLIDER_MAX}
                 step={RENT_SLIDER_STEP}
               />
-              {errors.maxRent && <p className="font-mono text-xs text-orange">{errors.maxRent}</p>}
+              {errors.maxRent && <p className="text-[13px] font-medium text-coral">{errors.maxRent}</p>}
 
               <TagInput
                 label="Excluded areas"
                 placeholder="or type a custom area"
                 tags={excludedAreas}
                 onChange={setExcludedAreas}
-                validate={(c) => checkAreaConflict(c, excludedAreas, softPreferences, 'excluded')}
+                validate={(c) => checkAreaConflict(c, excludedAreas, preferredAreas, 'excluded')}
                 presets={AREA_PRESETS}
+                accent="coral"
               />
 
               <div className="flex flex-col gap-2">
-                <span className="font-mono uppercase text-xs">Amenities required</span>
+                <span className="text-[13px] font-bold uppercase tracking-wide text-ink/60">
+                  Amenities required
+                </span>
                 <div className="flex flex-wrap gap-3">
                   <ToggleChip label="Needs a lift" checked={needsLift} onChange={setNeedsLift} />
                   <ToggleChip label="Needs parking" checked={needsParking} onChange={setNeedsParking} />
@@ -161,30 +166,36 @@ export default function ConstraintsFormPage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="flex flex-col gap-2">
-                  <span className="font-mono uppercase text-xs">Min bedrooms</span>
+                  <span className="text-[13px] font-bold uppercase tracking-wide text-ink/60">Min bedrooms</span>
                   <input
                     type="number"
+                    min={0}
                     value={minBedrooms}
-                    onChange={(e) => setMinBedrooms(e.target.value)}
-                    className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
+                    onChange={(e) => setMinBedrooms(stripNegative(e.target.value))}
+                    className="rounded-2xl border-2 border-ink/15 px-4 py-3 focus:border-coral focus:outline-none"
                   />
-                  {errors.minBedrooms && <p className="font-mono text-xs text-orange">{errors.minBedrooms}</p>}
+                  {errors.minBedrooms && <p className="text-[13px] font-medium text-coral">{errors.minBedrooms}</p>}
                 </label>
                 <label className="flex flex-col gap-2">
-                  <span className="font-mono uppercase text-xs">Min bathrooms</span>
+                  <span className="text-[13px] font-bold uppercase tracking-wide text-ink/60">Min bathrooms</span>
                   <input
                     type="number"
+                    min={0}
                     value={minBathrooms}
-                    onChange={(e) => setMinBathrooms(e.target.value)}
-                    className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
+                    onChange={(e) => setMinBathrooms(stripNegative(e.target.value))}
+                    className="rounded-2xl border-2 border-ink/15 px-4 py-3 focus:border-coral focus:outline-none"
                   />
-                  {errors.minBathrooms && <p className="font-mono text-xs text-orange">{errors.minBathrooms}</p>}
+                  {errors.minBathrooms && (
+                    <p className="text-[13px] font-medium text-coral">{errors.minBathrooms}</p>
+                  )}
                 </label>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-2">
-                  <span className="font-mono uppercase text-xs">Max commute (minutes)</span>
+                  <span className="text-[13px] font-bold uppercase tracking-wide text-ink/60">
+                    Max commute (minutes)
+                  </span>
                   <div className="flex flex-wrap gap-2">
                     {COMMUTE_PRESETS.map((mins) => (
                       <button
@@ -192,10 +203,10 @@ export default function ConstraintsFormPage() {
                         type="button"
                         onClick={() => setMaxCommuteMinutes(String(mins))}
                         aria-pressed={maxCommuteMinutes === String(mins)}
-                        className={`rounded-full border-2 border-ink px-3 py-1.5 font-mono text-xs uppercase transition-colors ${
+                        className={`rounded-full border-2 px-3 py-1.5 text-[13px] font-semibold transition-colors ${
                           maxCommuteMinutes === String(mins)
-                            ? 'bg-ink text-paper'
-                            : 'bg-transparent text-ink hover:bg-ink/10'
+                            ? 'border-ink bg-ink text-cream'
+                            : 'border-ink/15 bg-cream text-ink/70 hover:border-ink/40'
                         }`}
                       >
                         {mins} min
@@ -204,57 +215,71 @@ export default function ConstraintsFormPage() {
                   </div>
                   <input
                     type="number"
+                    min={0}
                     value={maxCommuteMinutes}
-                    onChange={(e) => setMaxCommuteMinutes(e.target.value)}
+                    onChange={(e) => setMaxCommuteMinutes(stripNegative(e.target.value))}
                     placeholder="or type an exact number, optional"
-                    className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
+                    className="rounded-2xl border-2 border-ink/15 px-4 py-3 focus:border-coral focus:outline-none"
                   />
                   {errors.maxCommuteMinutes && (
-                    <p className="font-mono text-xs text-orange">{errors.maxCommuteMinutes}</p>
+                    <p className="text-[13px] font-medium text-coral">{errors.maxCommuteMinutes}</p>
                   )}
                 </div>
                 <label className="flex flex-col gap-2">
-                  <span className="font-mono uppercase text-xs">Commute reference</span>
+                  <span className="text-[13px] font-bold uppercase tracking-wide text-ink/60">
+                    Commute reference
+                  </span>
                   <input
                     value={commuteReference}
                     onChange={(e) => setCommuteReference(e.target.value)}
                     placeholder="e.g. office in Hinjewadi"
-                    className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
+                    className="rounded-2xl border-2 border-ink/15 px-4 py-3 focus:border-coral focus:outline-none"
                   />
                   {errors.commuteReference && (
-                    <p className="font-mono text-xs text-orange">{errors.commuteReference}</p>
+                    <p className="text-[13px] font-medium text-coral">{errors.commuteReference}</p>
                   )}
                 </label>
               </div>
             </div>
           </section>
 
-          <section className="border-2 border-ink p-5">
-            <h2 className="font-display uppercase text-xl">Nice-to-haves (flexible)</h2>
-            <div className="mt-5">
+          <section className="rounded-[2rem] border-2 border-teal/30 bg-teal/10 p-6">
+            <h2 className="text-xl font-extrabold">Nice-to-haves (flexible)</h2>
+            <div className="mt-5 flex flex-col gap-6">
+              <TagInput
+                label="Preferred areas"
+                placeholder="or type a custom area"
+                tags={preferredAreas}
+                onChange={setPreferredAreas}
+                validate={(c) => checkAreaConflict(c, excludedAreas, preferredAreas, 'preferred')}
+                presets={AREA_PRESETS}
+                accent="teal"
+              />
+              {errors.preferredAreas && (
+                <p className="text-[13px] font-medium text-coral">{errors.preferredAreas}</p>
+              )}
+
               <TagInput
                 label="Soft preferences"
                 placeholder="or type a custom preference"
                 tags={softPreferences}
                 onChange={setSoftPreferences}
-                validate={(c) =>
-                  checkDuplicateTag(c, softPreferences) ??
-                  checkAreaConflict(c, excludedAreas, softPreferences, 'preference')
-                }
+                validate={(c) => checkDuplicateTag(c, softPreferences)}
                 presets={SOFT_PREFERENCE_PRESETS}
+                accent="teal"
               />
               {errors.softPreferences && (
-                <p className="font-mono text-xs text-orange">{errors.softPreferences}</p>
+                <p className="text-[13px] font-medium text-coral">{errors.softPreferences}</p>
               )}
             </div>
           </section>
 
-          {errors.form && <p className="font-mono text-xs text-orange">{errors.form}</p>}
+          {errors.form && <p className="text-[13px] font-medium text-coral">{errors.form}</p>}
 
           <button
             type="submit"
             disabled={saving}
-            className="rounded-full bg-ink px-8 py-4 font-display uppercase text-paper text-lg transition-transform hover:scale-105 disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-coral px-8 py-4 text-lg font-semibold text-cream shadow-[0_8px_0_0_#23201d] transition-all hover:translate-y-1 hover:shadow-[0_4px_0_0_#23201d] disabled:opacity-50"
           >
             {saving ? 'Saving…' : 'Save my constraints'}
           </button>

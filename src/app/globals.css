@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 ::selection {
-  background: #000000;
-  color: #ff4d00;
+  background: #23201d;
+  color: #ffc23c;
 }
 
 html {
@@ -12,9 +12,29 @@ html {
 }
 
 body {
-  background: #ffffff;
+  background: #fdf9f3;
+  overflow-x: hidden;
 }
 
-.text-outline {
-  -webkit-text-stroke: 1px #000000;
+.blob1 {
+  border-radius: 46% 54% 62% 38% / 54% 42% 58% 46%;
+}
+
+.blob2 {
+  border-radius: 60% 40% 33% 67% / 50% 56% 44% 50%;
+}
+
+.stroke-text {
+  -webkit-text-stroke: 2px #fdf9f3;
+  color: transparent;
+}
+
+.card-hover {
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px) rotate(-1deg);
 }

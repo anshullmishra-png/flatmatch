@@ -1,24 +1,12 @@
 import type { Metadata } from 'next';
-import { Archivo_Black, Space_Mono, Inter } from 'next/font/google';
+import { Poppins } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 
-const archivoBlack = Archivo_Black({
-  weight: '400',
+const poppins = Poppins({
+  weight: ['400', '500', '600', '700', '800', '900'],
   subsets: ['latin'],
-  variable: '--font-archivo-black',
-  display: 'swap',
-});
-
-const spaceMono = Space_Mono({
-  weight: ['400', '700'],
-  subsets: ['latin'],
-  variable: '--font-space-mono',
-  display: 'swap',
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-poppins',
   display: 'swap',
 });
 
@@ -29,8 +17,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${archivoBlack.variable} ${spaceMono.variable} ${inter.variable}`}>
-      <body className="font-body bg-paper text-ink">{children}</body>
+    <html lang="en" className={poppins.variable}>
+      <body className="font-sans bg-cream text-ink antialiased">
+        {children}
+        <Script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" strategy="afterInteractive" />
+      </body>
     </html>
   );
 }

@@ -7,6 +7,7 @@ export interface FieldErrors {
 export interface ProfileFormData {
   maxRent: string | number;
   excludedAreas: string[];
+  preferredAreas: string[];
   needsLift: boolean;
   needsParking: boolean;
   minBedrooms: string | number;
@@ -59,29 +60,29 @@ export function validateProfile(data: ProfileFormData): FieldErrors {
   }
 
   const excludedKeys = new Set(data.excludedAreas.map(normalizeArea));
-  const preferenceAreaConflict = data.softPreferences.find((p) => excludedKeys.has(normalizeTag(p)));
-  if (preferenceAreaConflict) {
-    errors.softPreferences = `"${preferenceAreaConflict}" is already in your excluded areas — remove it there first if you want it as a preference instead.`;
+  const areaConflict = data.preferredAreas.find((p) => excludedKeys.has(normalizeArea(p)));
+  if (areaConflict) {
+    errors.preferredAreas = `"${areaConflict}" is already in your excluded areas — remove it there first if you want it as a preferred area instead.`;
   }
 
   return errors;
 }
 
-// Live check used while typing a new excluded-area or soft-preference tag.
+// Live check used while typing a new excluded-area or preferred-area tag.
 export function checkAreaConflict(
   candidate: string,
   excludedAreas: string[],
-  softPreferences: string[],
-  target: 'excluded' | 'preference'
+  preferredAreas: string[],
+  target: 'excluded' | 'preferred'
 ): string | null {
   const key = normalizeArea(candidate);
   if (!key) return null;
 
-  if (target === 'preference' && excludedAreas.some((a) => normalizeArea(a) === key)) {
-    return `You've already excluded "${candidate.trim()}" — remove it from your excluded areas first if you want to list it as a preference instead.`;
+  if (target === 'preferred' && excludedAreas.some((a) => normalizeArea(a) === key)) {
+    return `You've already excluded "${candidate.trim()}" — remove it from your excluded areas first if you want to list it as preferred instead.`;
   }
-  if (target === 'excluded' && softPreferences.some((p) => normalizeTag(p) === key)) {
-    return `"${candidate.trim()}" is already one of your nice-to-haves — remove it there first if you want to exclude it instead.`;
+  if (target === 'excluded' && preferredAreas.some((p) => normalizeArea(p) === key)) {
+    return `"${candidate.trim()}" is already one of your preferred areas — remove it there first if you want to exclude it instead.`;
   }
   return null;
 }

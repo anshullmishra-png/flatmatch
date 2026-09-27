@@ -1,32 +1,43 @@
-interface MarqueeProps {
-  topText: string;
-  bottomText: string;
+const WORDS = [
+  { text: 'Must-haves', stroke: false },
+  { text: 'Nice-to-haves', stroke: true },
+  { text: 'Hard filters', stroke: false },
+  { text: 'Shortlists', stroke: true },
+  { text: 'No ghosting', stroke: false },
+];
+
+const ASTERISK_COLORS = ['text-sunny', 'text-coral', 'text-teal'];
+
+function WordGroup({ ariaHidden }: { ariaHidden?: boolean }) {
+  return (
+    <div className="flex items-center gap-10" aria-hidden={ariaHidden}>
+      {WORDS.map((word, i) => (
+        <div key={i} className="flex items-center gap-10">
+          <span
+            className={`whitespace-nowrap text-2xl font-extrabold md:text-3xl ${
+              word.stroke ? 'stroke-text' : 'text-cream'
+            }`}
+          >
+            {word.text}
+          </span>
+          <iconify-icon
+            icon="ph:asterisk-bold"
+            width="20"
+            height="20"
+            className={ASTERISK_COLORS[i % ASTERISK_COLORS.length]}
+          />
+        </div>
+      ))}
+    </div>
+  );
 }
 
-export default function Marquee({ topText, bottomText }: MarqueeProps) {
-  const row = (text: string) => Array.from({ length: 4 }).map((_, i) => (
-    <span key={i} className="mx-6 shrink-0">
-      {text}
-    </span>
-  ));
-
+export default function Marquee() {
   return (
-    <section className="-skew-y-[2deg] bg-ink py-10 overflow-hidden">
-      <div className="flex whitespace-nowrap animate-marquee">
-        <div className="flex font-display uppercase text-orange text-[10vw] leading-none">
-          {row(topText)}
-        </div>
-        <div className="flex font-display uppercase text-orange text-[10vw] leading-none" aria-hidden>
-          {row(topText)}
-        </div>
-      </div>
-      <div className="mt-4 flex whitespace-nowrap animate-marquee-reverse">
-        <div className="flex font-display uppercase text-paper/80 text-[5vw] leading-none">
-          {row(bottomText)}
-        </div>
-        <div className="flex font-display uppercase text-paper/80 text-[5vw] leading-none" aria-hidden>
-          {row(bottomText)}
-        </div>
+    <section className="overflow-hidden bg-ink py-7">
+      <div className="flex w-max animate-marquee items-center gap-10">
+        <WordGroup />
+        <WordGroup ariaHidden />
       </div>
     </section>
   );

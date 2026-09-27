@@ -9,33 +9,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        orange: '#FF4D00',
-        ink: '#000000',
-        paper: '#FFFFFF',
+        cream: '#fdf9f3',
+        coral: '#ff7a59',
+        teal: '#2bb6a3',
+        sunny: '#ffc23c',
+        ink: '#23201d',
+      },
+      borderRadius: {
+        blob: '46% 54% 62% 38% / 54% 42% 58% 46%',
       },
       fontFamily: {
-        display: ['var(--font-archivo-black)', 'Impact', 'sans-serif'],
-        mono: ['var(--font-space-mono)', 'monospace'],
-        body: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-poppins)', 'Poppins', 'sans-serif'],
       },
       keyframes: {
         marquee: {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-50%)' },
         },
-        'marquee-reverse': {
-          '0%': { transform: 'translateX(-50%)' },
-          '100%': { transform: 'translateX(0%)' },
+        floaty: {
+          '0%, 100%': { transform: 'translateY(0) rotate(0)' },
+          '50%': { transform: 'translateY(-16px) rotate(4deg)' },
         },
-        spin360: {
-          '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(360deg)' },
+        spinSlow: {
+          to: { transform: 'rotate(360deg)' },
         },
       },
       animation: {
-        marquee: 'marquee 18s linear infinite',
-        'marquee-reverse': 'marquee-reverse 22s linear infinite',
-        spin360: 'spin360 12s linear infinite',
+        marquee: 'marquee 26s linear infinite',
+        floaty: 'floaty 7s ease-in-out infinite',
+        'floaty-slow': 'floaty 10s ease-in-out infinite',
+        'spin-slow': 'spinSlow 22s linear infinite',
       },
     },
   },

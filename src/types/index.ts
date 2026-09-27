@@ -18,6 +18,7 @@ export interface Profile {
   participant_id: string;
   max_rent: number;
   excluded_areas: string[];
+  preferred_areas: string[];
   needs_lift: boolean;
   needs_parking: boolean;
   min_bedrooms: number;

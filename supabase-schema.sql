@@ -23,6 +23,7 @@ create table if not exists profiles (
   participant_id uuid primary key references participants(id) on delete cascade,
   max_rent numeric not null check (max_rent > 0),
   excluded_areas text[] not null default '{}',
+  preferred_areas text[] not null default '{}',
   needs_lift boolean not null default false,
   needs_parking boolean not null default false,
   min_bedrooms int not null default 0 check (min_bedrooms >= 0),

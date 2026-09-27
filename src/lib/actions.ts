@@ -101,6 +101,7 @@ export async function submitProfile(
   const db = supabaseServer();
 
   const excludedAreas = dedupeNormalized(input.excludedAreas).map((a) => a.trim());
+  const preferredAreas = dedupeNormalized(input.preferredAreas).map((a) => a.trim());
   const softPreferences = dedupeNormalized(input.softPreferences).map((p) => p.trim());
   const hasCommute =
     input.maxCommuteMinutes !== '' && input.maxCommuteMinutes !== null && input.commuteReference.trim() !== '';
@@ -109,6 +110,7 @@ export async function submitProfile(
     participant_id: participantId,
     max_rent: Number(input.maxRent),
     excluded_areas: excludedAreas,
+    preferred_areas: preferredAreas,
     needs_lift: input.needsLift,
     needs_parking: input.needsParking,
     min_bedrooms: input.minBedrooms === '' ? 0 : Number(input.minBedrooms),

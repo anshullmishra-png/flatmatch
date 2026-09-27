@@ -74,19 +74,29 @@ function hardFailuresFor(listing: Listing, profile: Profile, participantName: st
   return failures;
 }
 
-// Step 2: soft scoring via case-insensitive keyword matching against the
-// listing's searchable text (title + area + link).
+// Step 2: soft scoring. Preferred areas match exactly against the listing's
+// area; free-text soft preferences match via case-insensitive keyword search
+// against the listing's searchable text (title + area).
 function softSatisfaction(
   listing: Listing,
   profile: Profile
 ): { satisfaction: number; met: string[]; missed: string[] } {
-  if (profile.soft_preferences.length === 0) {
+  const totalPreferences = profile.preferred_areas.length + profile.soft_preferences.length;
+  if (totalPreferences === 0) {
     return { satisfaction: 1, met: [], missed: [] };
   }
 
   const haystack = `${listing.title} ${listing.area}`.toLowerCase();
   const met: string[] = [];
   const missed: string[] = [];
+
+  for (const area of profile.preferred_areas) {
+    if (normalizeArea(area) === normalizeArea(listing.area)) {
+      met.push(area);
+    } else {
+      missed.push(area);
+    }
+  }
 
   for (const pref of profile.soft_preferences) {
     const key = normalizeTag(pref);
@@ -97,7 +107,7 @@ function softSatisfaction(
     }
   }
 
-  return { satisfaction: met.length / profile.soft_preferences.length, met, missed };
+  return { satisfaction: met.length / totalPreferences, met, missed };
 }
 
 function isLikelyDuplicate(listing: Listing, others: Listing[]): boolean {

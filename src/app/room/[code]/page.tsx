@@ -64,25 +64,25 @@ export default function RoomHomePage() {
 
   if (state.status === 'loading') {
     return (
-      <main className="min-h-screen bg-paper px-6 pt-28">
+      <main className="min-h-screen bg-cream px-6 pt-28">
         <Nav />
-        <p className="font-mono text-sm">Loading room…</p>
+        <p className="text-ink/60">Loading room…</p>
       </main>
     );
   }
 
   if (state.status === 'not_found') {
     return (
-      <main className="min-h-screen bg-paper px-6 pt-28 pb-16">
+      <main className="min-h-screen bg-cream px-6 pb-16 pt-28">
         <Nav />
         <div className="mx-auto max-w-md text-center">
-          <h1 className="font-display uppercase text-4xl">Room not found</h1>
-          <p className="mt-4 font-body text-ink/70">
+          <h1 className="text-4xl font-extrabold tracking-tight">Room not found</h1>
+          <p className="mt-4 text-ink/65">
             The code &ldquo;{code}&rdquo; doesn&apos;t match any room. Double check the link, or start a new one.
           </p>
           <Link
             href="/create"
-            className="mt-8 inline-block rounded-full bg-ink px-8 py-4 font-display uppercase text-paper"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-coral px-8 py-4 font-semibold text-cream shadow-[0_8px_0_0_#23201d] transition-all hover:translate-y-1 hover:shadow-[0_4px_0_0_#23201d]"
           >
             Start a room
           </Link>
@@ -95,12 +95,12 @@ export default function RoomHomePage() {
 
   if (!me) {
     return (
-      <main className="min-h-screen bg-paper px-6 pt-28 pb-16">
+      <main className="min-h-screen bg-cream px-6 pb-16 pt-28">
         <Nav />
         <div className="mx-auto max-w-md">
-          <h1 className="font-display uppercase text-4xl tracking-[-0.04em] leading-[0.9]">{room.name}</h1>
-          <p className="mt-3 font-mono text-xs uppercase">Room code: {room.code}</p>
-          <p className="mt-6 font-body text-ink/70">
+          <h1 className="text-4xl font-extrabold leading-[0.95] tracking-tight">{room.name}</h1>
+          <p className="mt-3 text-[13px] font-bold uppercase tracking-wide text-teal">Room code: {room.code}</p>
+          <p className="mt-6 text-ink/65">
             {participants.length > 0
               ? `${participants.map((p) => p.display_name).join(', ')} ${participants.length === 1 ? 'is' : 'are'} already here. Enter your name to join them.`
               : 'Be the first to join this room.'}
@@ -110,13 +110,13 @@ export default function RoomHomePage() {
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
               placeholder="Your name"
-              className="border-2 border-ink px-4 py-3 font-body focus:outline-none focus:bg-orange/10"
+              className="rounded-2xl border-2 border-ink/15 px-4 py-3 focus:border-coral focus:outline-none"
             />
-            {joinError && <p className="font-mono text-xs text-orange">{joinError}</p>}
+            {joinError && <p className="text-[13px] font-medium text-coral">{joinError}</p>}
             <button
               type="submit"
               disabled={joining}
-              className="rounded-full bg-ink px-8 py-4 font-display uppercase text-paper text-lg transition-transform hover:scale-105 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-coral px-8 py-4 text-lg font-semibold text-cream shadow-[0_8px_0_0_#23201d] transition-all hover:translate-y-1 hover:shadow-[0_4px_0_0_#23201d] disabled:opacity-50"
             >
               {joining ? 'Joining…' : 'Join room'}
             </button>
@@ -130,36 +130,44 @@ export default function RoomHomePage() {
   const shareLink = typeof window !== 'undefined' ? `${window.location.origin}/room/${room.code}` : '';
 
   return (
-    <main className="min-h-screen bg-paper px-6 pt-28 pb-16">
+    <main className="min-h-screen bg-cream px-6 pb-16 pt-28">
       <Nav />
       <div className="mx-auto max-w-2xl">
-        <h1 className="font-display uppercase text-4xl tracking-[-0.04em] leading-[0.9]">{room.name}</h1>
+        <h1 className="text-4xl font-extrabold leading-[0.95] tracking-tight">{room.name}</h1>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3 border-2 border-ink px-4 py-3">
-          <span className="font-mono uppercase text-xs">Share:</span>
-          <code className="font-mono text-sm">{shareLink}</code>
+        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-2xl border-2 border-ink/15 px-4 py-3">
+          <span className="text-[13px] font-bold uppercase tracking-wide text-ink/60">Share:</span>
+          <code className="text-sm">{shareLink}</code>
           <button
             onClick={() => navigator.clipboard.writeText(shareLink)}
-            className="ml-auto rounded-full border-2 border-ink px-4 py-1.5 font-mono text-xs uppercase hover:bg-ink hover:text-paper transition-colors"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full border-2 border-ink px-4 py-1.5 text-[13px] font-semibold uppercase transition-colors hover:bg-ink hover:text-cream"
           >
+            <iconify-icon icon="ph:link-bold" width="14" height="14" />
             Copy link
           </button>
         </div>
 
         <section className="mt-8">
-          <h2 className="font-mono uppercase text-xs tracking-[-0.02em]">
+          <h2 className="text-[13px] font-bold uppercase tracking-wide text-ink/60">
             Who&apos;s in ({participants.length}/6)
           </h2>
-          <ul className="mt-3 divide-y-2 divide-ink border-2 border-ink">
+          <ul className="mt-3 divide-y-2 divide-ink/10 rounded-2xl border-2 border-ink/15">
             {participants.map((p) => (
               <li key={p.id} className="flex items-center justify-between px-4 py-3">
-                <span className="font-body">
+                <span>
                   {p.display_name}
-                  {p.id === me.id && <span className="font-mono text-xs text-ink/50"> (you)</span>}
+                  {p.id === me.id && <span className="text-sm text-ink/45"> (you)</span>}
                 </span>
                 <span
-                  className={`font-mono text-xs uppercase ${p.has_submitted ? 'text-ink' : 'text-ink/40'}`}
+                  className={`inline-flex items-center gap-1.5 text-[13px] font-semibold uppercase ${
+                    p.has_submitted ? 'text-teal' : 'text-ink/40'
+                  }`}
                 >
+                  <iconify-icon
+                    icon={p.has_submitted ? 'ph:check-circle-fill' : 'ph:clock-fill'}
+                    width="16"
+                    height="16"
+                  />
                   {p.has_submitted ? 'Submitted' : 'Waiting'}
                 </span>
               </li>
@@ -170,31 +178,31 @@ export default function RoomHomePage() {
         <section className="mt-10 grid gap-4 sm:grid-cols-3">
           <Link
             href={`/room/${room.code}/profile`}
-            className="border-2 border-ink px-5 py-6 text-center font-display uppercase transition-colors hover:bg-ink hover:text-paper"
+            className="card-hover rounded-[2rem] border-2 border-ink bg-cream px-5 py-6 text-center font-semibold transition-colors hover:bg-ink hover:text-cream"
           >
             {me.has_submitted ? 'Edit your constraints' : 'Fill your constraints'}
           </Link>
           <Link
             href={`/room/${room.code}/listings/new`}
-            className="border-2 border-ink px-5 py-6 text-center font-display uppercase transition-colors hover:bg-ink hover:text-paper"
+            className="card-hover rounded-[2rem] border-2 border-ink bg-cream px-5 py-6 text-center font-semibold transition-colors hover:bg-ink hover:text-cream"
           >
             Add a listing
           </Link>
           {submittedCount >= 2 ? (
             <Link
               href={`/room/${room.code}/shortlist`}
-              className="border-2 border-ink bg-orange px-5 py-6 text-center font-display uppercase transition-colors hover:bg-ink hover:text-paper"
+              className="card-hover rounded-[2rem] border-2 border-ink bg-coral px-5 py-6 text-center font-semibold text-cream transition-colors hover:bg-ink"
             >
               View shortlist
             </Link>
           ) : (
-            <div className="border-2 border-ink/30 px-5 py-6 text-center font-display uppercase text-ink/30">
+            <div className="rounded-[2rem] border-2 border-ink/15 px-5 py-6 text-center font-semibold text-ink/30">
               View shortlist
             </div>
           )}
         </section>
         {submittedCount < 2 && (
-          <p className="mt-3 font-mono text-xs text-ink/60">
+          <p className="mt-3 text-[13px] text-ink/50">
             Need at least 2 submitted profiles to run a shortlist — {submittedCount}/{participants.length} in so far.
           </p>
         )}
