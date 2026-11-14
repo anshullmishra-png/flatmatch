@@ -1,6 +1,15 @@
 # FlatMatch
 
-A shared-flat-search coordination tool for small groups (2–6 people) hunting for a flat together.
+**Helps 2–6 flatmates agree on a flat: everyone's must-haves filter the listings first, so the group only debates trade-offs.**
+
+[![licence: MIT](https://img.shields.io/badge/licence-MIT-blue)](LICENSE)
+
+[Live app](https://flatmatch-three.vercel.app) · Built for Mesa School of Business
+
+**Key decision:** the app never picks a flat. Gemini only turns an already-computed score into plain sentences; it never decides pass or fail or ranks listings.
+
+---
+
 
 **Core principle:** the app never picks a flat for the group. It captures each person's hard
 must-haves and soft preferences before anyone sees a listing, then shows a shortlist where every
